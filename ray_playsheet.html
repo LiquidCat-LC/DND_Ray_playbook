@@ -476,20 +476,37 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
 
       <div class="slot-body" id="sb-b">
+        <div class="act-item" id="act-b0">
+          <div class="act-row" onclick="togAct('b0')">
+            <div class="act-main">
+              <span class="act-name">🐻 Wild Shape → Starry Form</span>
+              <span class="act-short">Bonus Action · เสีย 1 Wild Shape use · เลือก constellation · 10 min</span>
+            </div>
+            <div class="act-right"><span class="at at-moss">1 Wild Shape</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            <b>Bonus Action</b> → เสีย 1 Wild Shape use → เข้า Starry Form ทันที<br>
+            ร่างกายเรืองแสงเป็นกลุ่มดาว · Bright Light 10ft · Dim Light 10ft เพิ่ม<br>
+            <b>เลือก Constellation:</b> Archer / Chalice / Dragon<br>
+            <b>Duration:</b> 10 นาที · จบเมื่อ dismiss (ไม่ต้อง Action) หรือ Incapacitated<br>
+            <b>Wild Shape uses:</b> 4/Short Rest · ใช้ Wild Resurgence ถ้าหมด (เสีย spell slot)<br>
+            <span class="tip">↳ เปิด Starry Form ตั้งแต่ต้น combat · เลือก Dragon ถ้า Concentration · Archer ถ้า DPS</span>
+          </div>
+        </div>
         <div class="act-item" id="act-b1">
           <div class="act-row" onclick="togAct('b1')">
             <div class="act-main">
               <span class="act-name">🌟 Starry Form — Switch Constellation</span>
-              <span class="act-short">Bonus Action · Archer / Chalice / Dragon · <span class="pas">◈ 1 free/turn</span></span>
+              <span class="act-short">ต้นทุก turn ใน Starry Form · เปลี่ยน Archer / Chalice / Dragon ได้ฟรี</span>
             </div>
-            <div class="act-right"><span class="at at-free">FREE · PRIORITY ①</span><span class="act-chev">▶</span></div>
+            <div class="act-right"><span class="at at-free">FREE · ต้นของ turn</span><span class="act-chev">▶</span></div>
           </div>
           <div class="act-detail">
-            ทุก turn ใน Starry Form → เลือก 1 constellation effect ใหม่:<br>
-            <b>Archer:</b> เมื่อ ally ภายใน 30ft สนามต่อเนื่อง attack → บวก 1d8 damage (radiant)<br>
-            <b>Chalice:</b> magic action → 1 creature ≤30ft restore 1d8+WIS(+5) HP<br>
-            <b>Dragon:</b> ปลายท turn → ลด damage ที่ตัวเองรับ 2d8 · ได้ resistance บางอย่าง<br>
-            <span class="tip">↳ Archer สำหรับ offensive · Chalice สำหรับ emergency healing · Dragon defensive</span>
+            ขณะอยู่ใน Starry Form → ต้นของทุก turn เลือก constellation ใหม่ได้:<br>
+            <b>Archer:</b> BA attack +9 · 2d8+5 Radiant · range 60ft · ยิงหลังจาก cast spell หรือแค่ BA<br>
+            <b>Chalice:</b> เมื่อ cast healing spell Lv1+ → 1 creature ≤30ft restore 2d8+5 HP เพิ่ม (ฟรี)<br>
+            <b>Dragon:</b> INT/WIS check หรือ CON save Concentration → d20 &lt; 10 = นับเป็น 10 · Fly 20ft + hover<br>
+            <span class="tip">↳ Archer สำหรับ offensive · Chalice healing support · Dragon Concentration + mobility</span>
           </div>
         </div>
         <div class="act-item" id="act-b2">
