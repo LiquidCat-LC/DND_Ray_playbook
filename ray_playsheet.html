@@ -230,8 +230,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="qs"><div class="qs-lbl">Speed</div><div class="qs-val" style="color:var(--text)">30ft</div><div class="qs-sub">per turn</div></div>
   <div class="qs"><div class="qs-lbl">Spell Save DC</div><div class="qs-val">17</div><div class="qs-sub">WIS + Prof</div></div>
   <div class="qs"><div class="qs-lbl">Spell Atk</div><div class="qs-val" style="color:var(--moss)">+9</div><div class="qs-sub">WIS + Prof</div></div>
-  <div class="qs"><div class="qs-lbl">Wild Shape</div><div class="qs-val">2×</div><div class="qs-sub">/Short Rest</div></div>
-  <div class="qs"><div class="qs-lbl">Cosmic Omen</div><div class="qs-val">∞ d6</div><div class="qs-sub">/Long Rest</div></div>
+  <div class="qs"><div class="qs-lbl">Wild Shape</div><div class="qs-val">4×</div><div class="qs-sub">/Short Rest</div></div>
+  <div class="qs"><div class="qs-lbl">Cosmic Omen</div><div class="qs-val">5× d6</div><div class="qs-sub">=WIS mod /LR</div></div>
   <div class="qs" style="border-color:rgba(62,91,163,.25)"><div class="qs-lbl">Constellation</div><div class="qs-val" style="color:var(--dusk)">Archer</div><div class="qs-sub">Active</div></div>
 </div>
 
@@ -300,7 +300,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <!-- RESOURCES -->
     <div class="panel">
       <div class="ptitle">Resources</div>
-      <div class="res-lbl">Wild Shape · 2× <span class="res-cnt moss" id="wsCnt">2</span>&nbsp;/ 2</div>
+      <div class="res-lbl">Wild Shape · 4× <span class="res-cnt moss" id="wsCnt">4</span>&nbsp;/ 4</div>
       <div class="dice-row" id="wsGrid"></div>
       <div class="res-note">คลิกเพื่อ Mark ใช้แล้ว · Short Rest จึงคืน</div>
 
@@ -318,13 +318,19 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="dice-row" id="slotGrid" style="margin-bottom:4px"></div>
       <div class="res-note">คลิกลำดับให้เลือก level · mark ใช้แล้ว</div>
 
-      <div class="sep">Cosmic Omen — d6 Rolls (∞ uses)</div>
-      <div class="res-lbl">ตัวเลือก Blessed Rolls &nbsp;<span class="res-cnt dusk" id="omenCnt">Unlimited</span></div>
-      <div style="margin-bottom:8px">
-        <button onclick="rollOmen()" style="width:100%;padding:6px;border-radius:5px;border:1px solid var(--dusk-dim);background:var(--dusk-glow);color:var(--dusk);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:all .18s">🎲 Roll d6 Omen</button>
+      <div class="sep">Guiding Bolt Free — 5/LR (=WIS mod)</div>
+      <div class="res-lbl">ยิง Radiant ฟรี &nbsp;<span class="res-cnt moss" id="gbCnt">5</span>&nbsp;/ 5</div>
+      <div class="dice-row" id="gbGrid"></div>
+      <div class="res-note">+9 · 4d6 Radiant · hit → next ally มี Adv · ฟรีไม่เสีย spell slot</div>
+
+      <div class="sep">Cosmic Omen Reaction — 5/LR (=WIS mod)</div>
+      <div class="res-lbl">Reaction บวก/ลบ d6 &nbsp;<span class="res-cnt dusk" id="omenCnt">5</span>&nbsp;/ 5</div>
+      <div class="dice-row" id="omenGrid"></div>
+      <div style="margin-bottom:6px;display:flex;gap:5px">
+        <button onclick="rollOmen()" style="flex:1;padding:5px;border-radius:5px;border:1px solid var(--dusk-dim);background:var(--dusk-glow);color:var(--dusk);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;transition:all .18s">🎲 Roll Long Rest Omen</button>
       </div>
-      <div id="omenDisplay" style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--dusk);text-align:center;margin-bottom:4px;height:20px"></div>
-      <div class="res-note">โยน d6 → Store 1 ตัวเลข · ใช้บวก ability check · reset Long Rest</div>
+      <div id="omenDisplay" style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--dusk);text-align:center;margin-bottom:4px;min-height:18px"></div>
+      <div class="res-note">โยนหลัง Long Rest: เลขคู่=Weal(+1d6) · เลขคี่=Woe(-1d6)</div>
 
       <div class="rest-row">
         <button class="rest-btn" onclick="shortRest()">⟳ Short Rest</button>
@@ -636,19 +642,31 @@ Turn priority:
 
 <script>
 // ── RESOURCES ──
-let wsTotal=2, wsSpent=0;
+let wsTotal=4, wsSpent=0;
 let slotMax=[4,3,3,3,2,1], slotSpent=[0,0,0,0,0,0];
-let omenValue=null;
+let gbTotal=5, gbSpent=0;
+let omenTotal=5, omenSpent=0;
+let omenType=null;
 
-function buildWildShape(){
-  const g=document.getElementById('wsGrid'); g.innerHTML='';
-  for(let i=0;i<wsTotal;i++){
+function buildDiceGrid(gridId, total, spent, setSpent, cls, label){
+  const g=document.getElementById(gridId); g.innerHTML='';
+  for(let i=0;i<total;i++){
     const d=document.createElement('div');
-    d.className='rdie'+(i<wsSpent?' spent':'');
-    d.textContent='🐻'; d.title=i<wsSpent?'Restore':'Use';
-    d.onclick=()=>{wsSpent=i<wsSpent?i:i+1;buildWildShape();updateUI();};
+    d.className=cls+(i<spent?' spent':'');
+    d.textContent=label; d.title=i<spent?'Restore':'Use';
+    d.onclick=()=>{setSpent(i<spent?i:i+1);};
     g.appendChild(d);
   }
+}
+
+function buildWildShape(){
+  buildDiceGrid('wsGrid',wsTotal,wsSpent,(v)=>{wsSpent=v;buildWildShape();updateUI();},'rdie','🐻');
+}
+function buildGB(){
+  buildDiceGrid('gbGrid',gbTotal,gbSpent,(v)=>{gbSpent=v;buildGB();updateUI();},'pdie','GB');
+}
+function buildOmen(){
+  buildDiceGrid('omenGrid',omenTotal,omenSpent,(v)=>{omenSpent=v;buildOmen();updateUI();},'ldie','◆');
 }
 
 function buildSlots(){
@@ -671,14 +689,17 @@ function buildSlots(){
 
 function rollOmen(){
   const roll=Math.floor(Math.random()*6)+1;
-  omenValue=roll;
+  omenType=roll%2===0?'Weal':'Woe';
   const el=document.getElementById('omenDisplay');
-  el.textContent='◆ '+roll;
-  el.style.color='var(--dusk)';
+  const color=omenType==='Weal'?'var(--moss)':'var(--red)';
+  el.style.color=color;
+  el.textContent='◆ '+roll+' → '+omenType+(omenType==='Weal'?' (+1d6 บน ally)':' (-1d6 บน enemy)');
 }
 
 function updateUI(){
   document.getElementById('wsCnt').textContent=wsTotal-wsSpent;
+  document.getElementById('gbCnt').textContent=gbTotal-gbSpent;
+  document.getElementById('omenCnt').textContent=omenTotal-omenSpent;
   document.getElementById('sl1').textContent=slotMax[0]-slotSpent[0];
   document.getElementById('sl2').textContent=slotMax[1]-slotSpent[1];
   document.getElementById('sl3').textContent=slotMax[2]-slotSpent[2];
@@ -704,14 +725,15 @@ function editHP(){const v=prompt('Set current HP (0–'+hpMax+'):',hp);if(v!==nu
 // ── RESTS ──
 function shortRest(){
   wsSpent=0; buildWildShape();
-  slotSpent=[0,0,0,0,0,0]; buildSlots();
   updateUI();
 }
 function longRest(){
   hp=hpMax; updateHP();
   wsSpent=0; buildWildShape();
   slotSpent=[0,0,0,0,0,0]; buildSlots();
-  omenValue=null; document.getElementById('omenDisplay').textContent='';
+  gbSpent=0; buildGB();
+  omenSpent=0; omenType=null; buildOmen();
+  document.getElementById('omenDisplay').textContent='← โยน d6 เพื่อกำหนด Weal/Woe';
   updateUI();
 }
 
@@ -756,7 +778,8 @@ function switchPage(name){
 }
 
 // ── INIT ──
-buildWildShape(); buildSlots(); updateHP(); updateUI();
+buildWildShape(); buildGB(); buildOmen(); buildSlots(); updateHP(); updateUI();
+document.getElementById('omenDisplay').textContent='← โยน d6 เพื่อกำหนด Weal/Woe';
 </script>
 </body>
 </html>
