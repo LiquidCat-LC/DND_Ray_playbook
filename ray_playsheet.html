@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAY — Circle of Stars Druid Lv12</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0b1211; --bg2:#0f1815; --panel:#131d1a; --panel2:#1a2723;
+  --border:#2a3a35; --border2:#3d5347;
+  --moss:#84d175; --moss-dim:rgba(132,209,117,.22); --moss-glow:rgba(132,209,117,.07);
+  --dusk:#3e5ba3; --dusk-dim:rgba(62,91,163,.22); --dusk-glow:rgba(62,91,163,.08);
+  --mint:#e6fbda; --mint-dim:rgba(230,251,218,.15);
+  --lemon:#fff8d2; --lemon-dim:rgba(255,248,210,.18);
+  --text:#e8e4d8; --text-mid:#a8a4c0; --text-dim:#5e7570;
+  --green:#4caf7d; --red:#ef5350; --gold:#c9a84c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;font-size:15px;min-height:100vh;font-weight:400;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 0%,rgba(132,209,117,.03) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 80% 100%,rgba(62,91,163,.03) 0%,transparent 60%);pointer-events:none;z-index:0}
+.page{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:18px 14px 60px}
+
+/* HEADER */
+.header{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--panel);border:1px solid var(--border2);border-radius:12px;margin-bottom:12px;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--moss),var(--dusk),transparent)}
+.char-name{font-family:'Cinzel',serif;font-size:28px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,var(--mint),var(--moss));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:4px}
+.char-meta{font-family:'Sarabun',sans-serif;font-size:13px;font-weight:500;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;padding:2px 9px;border-radius:20px;border:1px solid}
+.b-moss{border-color:var(--moss-dim);color:var(--moss);background:var(--moss-glow)}
+.b-gold{border-color:rgba(201,168,76,.4);color:var(--gold);background:rgba(201,168,76,.06)}
+.b-dusk{border-color:var(--dusk-dim);color:var(--dusk);background:rgba(62,91,163,.06)}
+
+/* QUICK STATS */
+.qs-row{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.qs{flex:1;min-width:80px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px 7px;text-align:center}
+.qs-lbl{font-family:'Sarabun',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:3px}
+.qs-val{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--moss);line-height:1}
+.qs-sub{font-size:11px;color:var(--text-dim);margin-top:1px;font-style:normal}
+
+/* LAYOUT */
+.main{display:grid;grid-template-columns:196px 1fr 268px;gap:11px;align-items:start}
+
+/* PANEL */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+.panel:last-child{margin-bottom:0}
+.ptitle{font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--gold-dim);display:flex;align-items:center;gap:8px}
+.ptitle::before{content:'';display:inline-block;width:3px;height:12px;background:var(--gold);border-radius:2px;flex-shrink:0}
+
+/* ABILITIES */
+.ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.ab{background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:8px 5px;text-align:center}
+.ab.pri{border-color:var(--moss-dim);background:var(--moss-glow)}
+.ab-n{font-family:'Sarabun',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase}
+.ab-s{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);line-height:1}
+.ab.pri .ab-s{color:var(--moss)}
+.ab-m{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim)}
+.ab.pri .ab-m{color:rgba(132,209,117,.7)}
+
+/* SAVES */
+.sv-list{display:flex;flex-direction:column;gap:2px}
+.sv{display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:4px;font-size:13px}
+.sv:hover{background:var(--panel2)}
+.sv-dot{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0}
+.sv-dot.p{background:var(--moss);border-color:var(--moss);box-shadow:0 0 4px var(--moss-dim)}
+.sv-n{flex:1;color:var(--text-dim)}
+.sv-n.p{color:var(--text)}
+.sv-v{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);min-width:26px;text-align:right}
+.sv-v.p{color:var(--moss)}
+
+/* HP */
+.hp-wrap{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.hp-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border2);background:var(--panel2);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.hp-btn:hover{border-color:var(--green);color:var(--green);background:rgba(76,175,125,.1)}
+.hp-btn.minus:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+.hp-mid{flex:1;text-align:center}
+.hp-cur{font-family:'Share Tech Mono',monospace;font-size:44px;font-weight:700;color:var(--green);line-height:1;cursor:pointer;display:inline-block;transition:color .3s}
+.hp-cur.warn{color:var(--gold)}
+.hp-cur.danger{color:var(--red)}
+.hp-lbl{font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace}
+.hp-bar{height:5px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-bottom:7px}
+.hp-fill{height:100%;background:linear-gradient(90deg,var(--green),#81c784);border-radius:3px;transition:width .3s,background .3s}
+.hp-fill.warn{background:linear-gradient(90deg,var(--gold),#fdd835)}
+.hp-fill.danger{background:linear-gradient(90deg,var(--red),#ef9a9a)}
+.hp-adj{display:flex;gap:4px;margin-top:4px}
+.hp-adj button{flex:1;padding:4px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s}
+.hp-adj button:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.hp-adj .heal{border-color:rgba(76,175,125,.3);color:var(--green)}
+.hp-adj .heal:hover{border-color:var(--green);background:rgba(76,175,125,.1)}
+
+/* RESOURCES */
+.res-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.res-cnt{font-size:12px;font-weight:600}
+.res-cnt.moss{color:var(--moss)}
+.res-cnt.dusk{color:var(--dusk)}
+.dice-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.pdie{width:36px;height:36px;border:2px solid var(--moss-dim);border-radius:7px;background:var(--moss-glow);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--moss);user-select:none}
+.pdie:hover{border-color:var(--moss);transform:translateY(-2px);box-shadow:0 0 8px var(--moss-dim)}
+.pdie.spent{border-color:var(--border);background:transparent;color:var(--border2);box-shadow:none;transform:none}
+.ldie{width:34px;height:34px;border:2px solid var(--dusk-dim);border-radius:7px;background:var(--dusk-glow);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;font-size:12px;color:var(--dusk);user-select:none}
+.ldie:hover{border-color:var(--dusk);transform:translateY(-2px);box-shadow:0 0 8px var(--dusk-dim)}
+.ldie.spent{border-color:var(--border);background:transparent;color:var(--border2);box-shadow:none;transform:none}
+.rdie{width:34px;height:34px;border:2px solid var(--moss-dim);border-radius:7px;background:rgba(132,209,117,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;font-size:11px;color:var(--moss);user-select:none}
+.rdie:hover{border-color:var(--moss);transform:translateY(-2px);box-shadow:0 0 8px var(--moss-dim)}
+.rdie.spent{border-color:var(--border);background:transparent;color:var(--border2);box-shadow:none;transform:none}
+.res-note{font-size:12px;color:var(--text-dim);font-style:normal;line-height:1.55;margin-bottom:4px}
+.sep{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;display:flex;align-items:center;gap:7px;margin:9px 0 6px}
+.sep::after{content:'';flex:1;height:1px;background:var(--border)}
+.rest-row{display:flex;gap:5px;margin-top:8px}
+.rest-btn{flex:1;padding:5px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .18s;text-transform:uppercase}
+.rest-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+/* TURN FLOW */
+.tf{background:linear-gradient(135deg,rgba(132,209,117,.04),rgba(62,91,163,.03));border:1px solid rgba(132,209,117,.15);border-radius:10px;padding:14px;margin-bottom:10px}
+.tf-title{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;margin-bottom:11px;display:flex;align-items:center;gap:8px}
+.tf-title::before{content:'//';color:var(--moss)}
+.tf-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tf-step{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px}
+.tf-badge{width:24px;height:24px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;margin-bottom:7px;color:#fff}
+.tf-badge.A{background:#2e7d32}
+.tf-badge.B{background:#00796b}
+.tf-badge.R{background:#b71c1c}
+.tf-badge.M{background:#6a1b9a}
+.tf-ttl{font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px}
+.tf-body{font-size:13px;color:var(--text-dim);line-height:1.65}
+.tf-body .hi{color:var(--moss);font-weight:600}
+.tf-body .warn{color:var(--gold)}
+.tf-body .opt{opacity:.55;font-style:italic}
+.tf-body .prio{color:var(--green);font-weight:600}
+
+/* ACTION SLOTS */
+.slot-tabs{display:flex;gap:3px;margin-bottom:8px}
+.slot-tab{flex:1;padding:5px 2px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Sarabun',sans-serif;font-size:10px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .18s;text-transform:uppercase}
+.slot-tab.ta.on{border-color:rgba(132,209,117,.6);color:#81c784;background:rgba(132,209,117,.1)}
+.slot-tab.tb.on{border-color:rgba(0,121,107,.6);color:#4db6ac;background:rgba(0,121,107,.1)}
+.slot-tab.tr.on{border-color:rgba(183,28,28,.6);color:#ef9a9a;background:rgba(183,28,28,.1)}
+.slot-tab.tf.on{border-color:rgba(201,168,76,.5);color:var(--gold);background:var(--gold-dim)}
+.slot-body{display:none}
+.slot-body.on{display:block}
+.at{font-family:'Share Tech Mono',monospace;font-size:9px;padding:1px 6px;border-radius:10px;border:1px solid;white-space:nowrap}
+.at-free{border-color:rgba(201,168,76,.4);color:var(--gold);background:var(--gold-dim)}
+.at-moss{border-color:var(--moss-dim);color:var(--moss);background:var(--moss-glow)}
+.at-dusk{border-color:var(--dusk-dim);color:var(--dusk);background:rgba(62,91,163,.06)}
+.at-red{border-color:rgba(239,83,80,.4);color:var(--red);background:var(--red-dim)}
+.at-pass{border-color:var(--border2);color:var(--text-dim);background:transparent}
+/* ACT ACCORDION */
+.act-item{border:1px solid var(--border);border-radius:7px;margin-bottom:5px;overflow:hidden;background:var(--panel2);transition:border-color .18s}
+.act-item:last-child{margin-bottom:0}
+.act-item.open{border-color:var(--moss-dim)}
+.act-row{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;cursor:pointer;user-select:none;transition:background .15s}
+.act-row:hover{background:rgba(255,255,255,.025)}
+.act-main{flex:1;min-width:0}
+.act-name{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:3px}
+.act-short{font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4}
+.act-short .pas{color:var(--gold)}
+.act-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;padding-top:1px}
+.act-chev{font-size:10px;color:var(--border2);transition:transform .2s}
+.act-item.open .act-chev{transform:rotate(90deg);color:var(--moss)}
+.act-detail{display:none;padding:10px 11px 11px;border-top:1px solid var(--border);background:var(--bg2);font-size:13px;color:var(--text-dim);line-height:1.7}
+.act-item.open .act-detail{display:block}
+.act-detail b{color:var(--text-mid);font-weight:600}
+.act-detail .roll{color:var(--green);font-family:'Share Tech Mono',monospace;font-style:normal}
+.act-detail .tip{color:var(--gold);font-style:italic}
+.act-detail .warn{color:var(--red)}
+.act-detail .v{color:var(--moss);font-family:'Share Tech Mono',monospace}
+
+/* RIGHT SCROLL */
+.right-col{max-height:calc(100vh - 100px);overflow-y:auto;padding-right:2px}
+.right-col::-webkit-scrollbar{width:3px}
+.right-col::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+@media(max-width:900px){.main{grid-template-columns:1fr}.tf-steps{grid-template-columns:1fr 1fr}.right-col{max-height:none}}
+@media(max-width:520px){.tf-steps{grid-template-columns:1fr}.char-name{font-size:22px}}
+
+/* PAGE TABS */
+.page-tabs{display:flex;gap:6px;margin-bottom:12px}
+.page-tab{padding:7px 22px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.page-tab.on{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.page-tab:hover:not(.on){border-color:var(--border2);color:var(--text)}
+.page-view{display:none}
+.page-view.on{display:block}
+
+/* CHAR SHEET LAYOUT */
+.cs-2col{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+.cs-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-bottom:11px}
+@media(max-width:900px){.cs-2col,.cs-3col{grid-template-columns:1fr}}
+
+/* TEXTAREA */
+.cs-textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);resize:vertical;color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;min-height:80px;outline:none;padding:5px 0;line-height:1.65}
+.cs-textarea:focus{border-bottom-color:var(--gold)}
+.cs-textarea::placeholder{color:var(--text-dim);opacity:.5}
+
+/* COINS */
+.coin-row{display:flex;gap:8px}
+.coin-box{flex:1;text-align:center;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:9px 5px}
+.coin-lbl{font-family:'Sarabun',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px}
+.coin-inp{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:18px;text-align:center;outline:none;padding:2px 0}
+.coin-inp:focus{border-bottom-color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <div style="flex:1">
+    <div class="char-name">RAY</div>
+    <div class="char-meta">Circle of Stars Druid · Tiefling · Level 12 · D&amp;D 2024</div>
+    <div class="badges">
+      <span class="badge b-moss">TIEFLING ABYSSAL · GUIDE</span>
+      <span class="badge b-dusk">STARRY FORM</span>
+      <span class="badge b-gold">PROF BONUS +4</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE TABS -->
+<div class="page-tabs">
+  <button class="page-tab on" id="ptab-play" onclick="switchPage('play')">⚔ Play Sheet</button>
+  <button class="page-tab" id="ptab-sheet" onclick="switchPage('sheet')">📋 Character Sheet</button>
+</div>
+
+<div id="view-play" class="page-view on">
+
+<!-- QUICK STATS -->
+<div class="qs-row">
+  <div class="qs"><div class="qs-lbl">AC</div><div class="qs-val" style="color:var(--gold)">15</div><div class="qs-sub">Natural + WIS</div></div>
+  <div class="qs"><div class="qs-lbl">Initiative</div><div class="qs-val">+1</div><div class="qs-sub">DEX</div></div>
+  <div class="qs"><div class="qs-lbl">Speed</div><div class="qs-val" style="color:var(--text)">30ft</div><div class="qs-sub">per turn</div></div>
+  <div class="qs"><div class="qs-lbl">Spell Save DC</div><div class="qs-val">17</div><div class="qs-sub">WIS + Prof</div></div>
+  <div class="qs"><div class="qs-lbl">Spell Atk</div><div class="qs-val" style="color:var(--moss)">+9</div><div class="qs-sub">WIS + Prof</div></div>
+  <div class="qs"><div class="qs-lbl">Wild Shape</div><div class="qs-val">2×</div><div class="qs-sub">/Short Rest</div></div>
+  <div class="qs"><div class="qs-lbl">Cosmic Omen</div><div class="qs-val">∞ d6</div><div class="qs-sub">/Long Rest</div></div>
+  <div class="qs" style="border-color:rgba(62,91,163,.25)"><div class="qs-lbl">Constellation</div><div class="qs-val" style="color:var(--dusk)">Archer</div><div class="qs-sub">Active</div></div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main">
+
+  <!-- ══ LEFT ══ -->
+  <div>
+    <div class="panel">
+      <div class="ptitle">Ability Scores</div>
+      <div class="ab-grid">
+        <div class="ab pri"><div class="ab-n">WIS</div><div class="ab-s">20</div><div class="ab-m">+5</div></div>
+        <div class="ab"><div class="ab-n">CON</div><div class="ab-s">17</div><div class="ab-m">+3</div></div>
+        <div class="ab"><div class="ab-n">DEX</div><div class="ab-s">13</div><div class="ab-m">+1</div></div>
+        <div class="ab"><div class="ab-n">INT</div><div class="ab-s">12</div><div class="ab-m">+1</div></div>
+        <div class="ab"><div class="ab-n">STR</div><div class="ab-s">10</div><div class="ab-m">+0</div></div>
+        <div class="ab"><div class="ab-n">CHA</div><div class="ab-s">8</div><div class="ab-m">-1</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Saving Throws</div>
+      <div class="sv-list">
+        <div class="sv"><div class="sv-dot p"></div><span class="sv-n p">Wisdom</span><span class="sv-v p">+9</span></div>
+        <div class="sv"><div class="sv-dot p"></div><span class="sv-n p">Intelligence</span><span class="sv-v p">+5</span></div>
+        <div class="sv"><div class="sv-dot"></div><span class="sv-n">Dexterity</span><span class="sv-v">+1</span></div>
+        <div class="sv"><div class="sv-dot"></div><span class="sv-n">Constitution</span><span class="sv-v">+3</span></div>
+        <div class="sv"><div class="sv-dot"></div><span class="sv-n">Strength</span><span class="sv-v">+0</span></div>
+        <div class="sv"><div class="sv-dot"></div><span class="sv-n">Charisma</span><span class="sv-v">-1</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Conditions</div>
+      <div class="cond-list" id="condList">
+        <span class="ctag add" onclick="addCond()">+ Add</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CENTER ══ -->
+  <div>
+
+    <!-- HP -->
+    <div class="panel">
+      <div class="ptitle">Hit Points</div>
+      <div class="hp-wrap">
+        <button class="hp-btn minus" onclick="adjHP(-1)" title="Damage (−1)">−</button>
+        <div class="hp-mid">
+          <div class="hp-cur" id="hpCur" onclick="editHP()" title="Click to set value">99</div>
+          <div class="hp-lbl">/ <span id="hpMax">99</span> max HP</div>
+        </div>
+        <button class="hp-btn" onclick="adjHP(1)" title="Heal (+1)">+</button>
+      </div>
+      <div class="hp-bar"><div class="hp-fill" id="hpFill" style="width:100%"></div></div>
+      <div class="hp-adj">
+        <button onclick="adjHP(-5)">−5</button>
+        <button onclick="adjHP(-10)">−10</button>
+        <button onclick="adjHP(-20)">−20</button>
+        <button onclick="adjHP(5)">+5</button>
+        <button onclick="adjHP(10)">+10</button>
+        <button class="heal" onclick="fullHeal()">FULL</button>
+      </div>
+    </div>
+
+    <!-- RESOURCES -->
+    <div class="panel">
+      <div class="ptitle">Resources</div>
+      <div class="res-lbl">Wild Shape · 2× <span class="res-cnt moss" id="wsCnt">2</span>&nbsp;/ 2</div>
+      <div class="dice-row" id="wsGrid"></div>
+      <div class="res-note">คลิกเพื่อ Mark ใช้แล้ว · Short Rest จึงคืน</div>
+
+      <div class="sep">Spell Slots — Lv1–6</div>
+      <div style="display:flex;gap:10px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:6px">
+        <span>Lv1: <span class="res-cnt moss" id="sl1">4</span>/4</span>
+        <span>Lv2: <span class="res-cnt moss" id="sl2">3</span>/3</span>
+        <span>Lv3: <span class="res-cnt moss" id="sl3">3</span>/3</span>
+        <span>Lv4: <span class="res-cnt moss" id="sl4">3</span>/3</span>
+      </div>
+      <div style="display:flex;gap:10px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:6px">
+        <span>Lv5: <span class="res-cnt moss" id="sl5">2</span>/2</span>
+        <span>Lv6: <span class="res-cnt moss" id="sl6">1</span>/1</span>
+      </div>
+      <div class="dice-row" id="slotGrid" style="margin-bottom:4px"></div>
+      <div class="res-note">คลิกลำดับให้เลือก level · mark ใช้แล้ว</div>
+
+      <div class="sep">Cosmic Omen — d6 Rolls (∞ uses)</div>
+      <div class="res-lbl">ตัวเลือก Blessed Rolls &nbsp;<span class="res-cnt dusk" id="omenCnt">Unlimited</span></div>
+      <div style="margin-bottom:8px">
+        <button onclick="rollOmen()" style="width:100%;padding:6px;border-radius:5px;border:1px solid var(--dusk-dim);background:var(--dusk-glow);color:var(--dusk);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:all .18s">🎲 Roll d6 Omen</button>
+      </div>
+      <div id="omenDisplay" style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--dusk);text-align:center;margin-bottom:4px;height:20px"></div>
+      <div class="res-note">โยน d6 → Store 1 ตัวเลข · ใช้บวก ability check · reset Long Rest</div>
+
+      <div class="rest-row">
+        <button class="rest-btn" onclick="shortRest()">⟳ Short Rest</button>
+        <button class="rest-btn" onclick="longRest()">☀ Long Rest (Reset All)</button>
+      </div>
+    </div>
+
+    <!-- TURN FLOW -->
+    <div class="tf">
+      <div class="tf-title">Turn Flow — Priority Sequence</div>
+      <div class="tf-steps">
+        <div class="tf-step">
+          <div><span class="tf-badge A">A</span></div>
+          <div class="tf-ttl">Action</div>
+          <div class="tf-body">
+            <span class="hi">Spell Cast</span><br>
+            Guiding Bolt DC17<br>
+            Shillelagh +9 / 1d8+5<br>
+            (or Cast higher Lv)<br>
+            <span class="warn">→ Crit threat</span>
+          </div>
+        </div>
+        <div class="tf-step">
+          <div><span class="tf-badge B">B</span></div>
+          <div class="tf-ttl">Bonus — เลือก</div>
+          <div class="tf-body">
+            <span class="prio">① Starry Form</span><br>
+            Switch constellation<br>
+            ② Bonus spell (if have)<br>
+            ③ Dash / Object<br>
+            <span class="opt">④ Hide (if cover)</span>
+          </div>
+        </div>
+        <div class="tf-step">
+          <div><span class="tf-badge R">R</span></div>
+          <div class="tf-ttl">Reaction</div>
+          <div class="tf-body">
+            <span class="hi">Opportunity Attack</span><br>
+            Shillelagh +9<br>
+            <span class="warn">ประหยัดไว้</span><br>
+            <span class="opt">หรือ ردّ spell / effect</span>
+          </div>
+        </div>
+        <div class="tf-step">
+          <div><span class="tf-badge M">◈</span></div>
+          <div class="tf-ttl">Constellation</div>
+          <div class="tf-body">
+            <b>Archer:</b> Guiding Bolt<br>
+            <b>Chalice:</b> Healing surge<br>
+            <b>Dragon:</b> AC + resist<br>
+            <span class="hi">1 free per turn</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION SLOTS -->
+    <div class="panel">
+      <div class="ptitle">Action Reference</div>
+      <div class="slot-tabs">
+        <button class="slot-tab ta on" id="tab-a" onclick="switchTab('a')">⚔ ACTION</button>
+        <button class="slot-tab tb" id="tab-b" onclick="switchTab('b')">⚡ BONUS</button>
+        <button class="slot-tab tr" id="tab-r" onclick="switchTab('r')">🛡 REACT</button>
+        <button class="slot-tab tf" id="tab-f" onclick="switchTab('f')">◈ PASSIVE</button>
+      </div>
+
+      <div class="slot-body on" id="sb-a">
+        <div class="act-item" id="act-a1">
+          <div class="act-row" onclick="togAct('a1')">
+            <div class="act-main">
+              <span class="act-name">✦ Guiding Bolt — Free (1/LR)</span>
+              <span class="act-short">+9 · 4d6 Radiant · บังคับ WIS save ไม่ค่ายได้ · <span class="pas">★ ต่อเนื่อง</span></span>
+            </div>
+            <div class="act-right"><span class="at at-free">FREE (once/LR)</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            +9 to hit · <span class="v">4d6 Radiant</span><br>
+            <b>Hit:</b> บังคับให้เป้า WIS save DC17 หรือ fail → Ally ถัดไปมี Advantage ต่อเป้านั้น<br>
+            Magic action · 120ft range · <b>ใช้ 1 ครั้งหลัง Long Rest แบบฟรี ไม่เสีย spell slot</b><br>
+            <span class="tip">◈ Priority ① ในเกือบทุก turn เพราะ ธีม advantage ให้ party</span>
+          </div>
+        </div>
+        <div class="act-item" id="act-a2">
+          <div class="act-row" onclick="togAct('a2')">
+            <div class="act-main">
+              <span class="act-name">🌿 Shillelagh — Spell (Lvl 0 Bonus)</span>
+              <span class="act-short">+9 · 1d8+5 Bludgeoning · versatile · <span class="pas">★ Focus free</span></span>
+            </div>
+            <div class="act-right"><span class="at at-free">FREE (Bonus Action)</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            +9 to hit · <span class="v">1d8+5 Bludgeoning</span><br>
+            <b>Casting Time:</b> Bonus Action · <b>Duration:</b> 1 minute (Concentration)<br>
+            ใช้ quarterstaff ได้ทั้ง one-handed และ two-handed (versatile)<br>
+            <span class="tip">↳ ดีสำหรับ off-turn หรือเวลา spell slot ต่ำ · ใช้ bonus action ฟรี</span>
+          </div>
+        </div>
+        <div class="act-item" id="act-a3">
+          <div class="act-row" onclick="togAct('a3')">
+            <div class="act-main">
+              <span class="act-name">🔥 Cure Wounds / Lesser Restoration</span>
+              <span class="act-short">Healing action · Lv1-3 slot · ต้อง touch · <span class="pas">★ Prepared</span></span>
+            </div>
+            <div class="act-right"><span class="at at-moss">Slot</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            <b>Cure Wounds:</b> Magic action · ต้อง touch · 1d8 + WIS(+5) HP · 10 min concentration<br>
+            <b>Lesser Restoration:</b> Magic action · cure 1 condition (blind, deaf, paralyzed, poisoned)<br>
+            Prepared at Lv1-3 เพื่อหนุนกำลัง party<br>
+            <span class="tip">↳ ใช้เมื่อ party ต่ำ HP แต่ปลอดภัย · Better as BA</span>
+          </div>
+        </div>
+        <div class="act-item" id="act-a4">
+          <div class="act-row" onclick="togAct('a4')">
+            <div class="act-main">
+              <span class="act-name">❄️ Pass Without Trace / Entangle</span>
+              <span class="act-short">Lv2+ spell · Control area · <span class="pas">★ Environmental</span></span>
+            </div>
+            <div class="act-right"><span class="at at-dusk">Slot</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            <b>Pass Without Trace (Lv2):</b> ทั้งที่เป้า 60ft mutes tracks + Stealth Adv ทั้ง party 1 ชม.<br>
+            <b>Entangle (Lv1):</b> ต้อง STR/DEX save DC17 หรือ Restrained 1 นาที ใน 20ft radius<br>
+            ใช้สำหรับ preparation, survival, utility<br>
+            <span class="tip">↳ Entangle = โปรด combo กับ melee characters</span>
+          </div>
+        </div>
+        <div class="act-item" id="act-a5">
+          <div class="act-row" onclick="togAct('a5')">
+            <div class="act-main">
+              <span class="act-name">🎯 Hold Person / Command</span>
+              <span class="act-short">Lv2+ save spell · WIS DC17 · <span class="pas">★ Boss control</span></span>
+            </div>
+            <div class="act-right"><span class="at at-moss">Slot</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            <b>Hold Person (Lv2):</b> เป้า 1 humanoid ≤60ft → WIS save DC17 หรือ Paralyzed (Concentration)<br>
+            <b>Command (Lv1):</b> 1 creature ≤60ft → WIS save DC17 หรือ ต้องทำ 1 action : flee, drop, disengage, dodge<br>
+            Save ทุก round (end of turn) หรือจบ Concentration<br>
+            <span class="tip">↳ Hold Person เด่นเอา boss alone · Command = quick control</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slot-body" id="sb-b">
+        <div class="act-item" id="act-b1">
+          <div class="act-row" onclick="togAct('b1')">
+            <div class="act-main">
+              <span class="act-name">🌟 Starry Form — Switch Constellation</span>
+              <span class="act-short">Bonus Action · Archer / Chalice / Dragon · <span class="pas">◈ 1 free/turn</span></span>
+            </div>
+            <div class="act-right"><span class="at at-free">FREE · PRIORITY ①</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            ทุก turn ใน Starry Form → เลือก 1 constellation effect ใหม่:<br>
+            <b>Archer:</b> เมื่อ ally ภายใน 30ft สนามต่อเนื่อง attack → บวก 1d8 damage (radiant)<br>
+            <b>Chalice:</b> magic action → 1 creature ≤30ft restore 1d8+WIS(+5) HP<br>
+            <b>Dragon:</b> ปลายท turn → ลด damage ที่ตัวเองรับ 2d8 · ได้ resistance บางอย่าง<br>
+            <span class="tip">↳ Archer สำหรับ offensive · Chalice สำหรับ emergency healing · Dragon defensive</span>
+          </div>
+        </div>
+        <div class="act-item" id="act-b2">
+          <div class="act-row" onclick="togAct('b2')">
+            <div class="act-main">
+              <span class="act-name">🏃 Dash / Disengage</span>
+              <span class="act-short">60ft movement · หรือ ไม่ provoke OA · <span class="pas">★ Mobility</span></span>
+            </div>
+            <div class="act-right"><span class="at at-free">FREE · Backup</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            <b>Dash:</b> Bonus Action → Speed ×2 = 60ft ไปไหนก็ได้<br>
+            <b>Disengage:</b> Bonus Action → ไม่ provoke Opportunity Attack จนจบ turn นี้<br>
+            Dash ดีเพื่อ escape · Disengage ดีเพื่อ reposition<br>
+            <span class="tip">↳ ใช้เมื่อต้องการ move safe หรือ kite</span>
+          </div>
+        </div>
+        <div class="act-item" id="act-b3">
+          <div class="act-row" onclick="togAct('b3')">
+            <div class="act-main">
+              <span class="act-name">💚 Healing Word — Reaction Slot</span>
+              <span class="act-short">Lv1+ reaction spell · ≤60ft · ต่าง distance</span>
+            </div>
+            <div class="act-right"><span class="at at-moss">Slot (BA/Reaction)</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            Casting Time: Bonus Action (or reaction as preparation)<br>
+            Range: 60ft (no touch required) · Restore 1d4+WIS(+5) HP<br>
+            ใช้ Prepared spell ≥ Lv1 · ไม่ต้อง see target ก็ได้<br>
+            <span class="tip">↳ ดีสำหรับ remote healing · ใช้ bonus action เหนือ Shillelagh</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slot-body" id="sb-f">
+      </div>
+
+      <div class="slot-body" id="sb-r">
+        <div class="act-item" id="act-r1">
+          <div class="act-row" onclick="togAct('r1')">
+            <div class="act-main">
+              <span class="act-name">⚔️ Opportunity Attack</span>
+              <span class="act-short">melee attack · ≤5ft leave · +9 · 1d8+5</span>
+            </div>
+            <div class="act-right"><span class="at at-free">FREE · 1×/turn</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            Trigger: enemy ≤5ft ของตัวเองออกจาก range (ไม่ Disengage)<br>
+            Action: Shillelagh attack +9 · 1d8+5 Bludgeoning<br>
+            <span class="tip">↳ ประหยัดไว้จนกว่าศัตรูจะ escape · Don't waste on nothing</span>
+          </div>
+        </div>
+        <div class="act-item" id="act-r2">
+          <div class="act-row" onclick="togAct('r2')">
+            <div class="act-main">
+              <span class="act-name">💫 Reaction Spell — Save</span>
+              <span class="act-short">Shield / Absorb Elements / など · <span class="pas">★ Situational</span></span>
+            </div>
+            <div class="act-right"><span class="at at-dusk">Slot</span><span class="act-chev">▶</span></div>
+          </div>
+          <div class="act-detail">
+            <b>Shield of Faith (Reaction preparation):</b> Magic action → +2 AC ต่อตัวเอง 10 min (Concentration)<br>
+            <b>Absorb Elements (Reaction):</b> เมื่อได้รับ energy damage → ลด ครึ่ง · ต้อง save<br>
+            เก็บ reaction ไว้สำหรับ effect defense<br>
+            <span class="tip">↳ ใช้เฉพาะเมื่อจำเป็น · ไม่ pre-cast Shield ถ้าไม่หนาวไม่ร้อน</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RIGHT ══ -->
+  <div class="right-col">
+    <div class="panel">
+      <div class="ptitle">Spells Prepared (17 total)</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);line-height:1.8;margin-bottom:4px">
+        <b style="color:var(--moss)">Lv1 (auto): Guiding Bolt</b><br>
+        Cure Wounds · Entangle · Detect Magic · Absorb Elements<br>
+        <br>
+        <b style="color:var(--moss)">Lv2-3:</b><br>
+        Hold Person · Pass Without Trace · Lesser Restoration · Shillelagh<br>
+        <br>
+        <b style="color:var(--moss)">Lv4-6:</b><br>
+        (adjust per campaign)<br>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Starry Form Notes</div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.8">
+        <b style="color:var(--moss)">● Active:</b> Lasts 10 min · can toggle OFF as BA<br>
+        <b style="color:var(--moss)">● Damage:**</b> Bludgeoning only · Shillelagh + WIS<br>
+        <b style="color:var(--moss)">● Saves:</b> Spell Save DC17 (WIS+Prof)<br>
+        <span style="opacity:.7">Lasts Concentration · ends if reduce HP to 0</span>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /main -->
+</div><!-- /view-play -->
+
+<!-- ══ CHARACTER SHEET VIEW ══ -->
+<div id="view-sheet" class="page-view">
+
+  <div class="panel" style="margin-bottom:11px">
+    <div class="ptitle">Signature Features</div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.8">
+      <b style="color:var(--moss)">Circle of Stars:</b> Gain Starry Form (10 min duration, switch constellation BA). ☆ Lv18 gets auto-bonus constellation<br>
+      <b style="color:var(--moss)">Wisdom of the Ancients:</b> AC 15 + WIS mod (unarmored, like monk)<br>
+      <b style="color:var(--moss)">Guiding Bolt 1/LR:</b> Cast at Lv1 slot for free after Long Rest<br>
+      <b style="color:var(--moss)">Spell Save DC:</b> 17 (WIS +5 + Prof +4)<br>
+      <b style="color:var(--moss)">Tiefling Abyssal:</b> Poison Spray · Ray of Sickness (2/LR) · Hold Person (Lv5, 1/LR)
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle">Equipment / Gear</div>
+    <textarea class="cs-textarea" style="min-height:120px" placeholder="...">⚔️ Quarterstaff (2d6 versatile · apply Shillelagh)
+🌿 Druidic Focus · Holy Symbol
+🛡️ Cloak (leather base, druidic symbols)
+
+🎒 Adventuring Gear
+Bedroll · Rope 50ft · Lantern · Tinder Box
+Healer's Kit · Herbalism Kit
+Waterskin · Rations (10 days)
+
+💍 Accessories
+(none equipped currently)
+
+🪙 Coins
+GP: 45 · SP: 0 · CP: 0</textarea>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle">Notes</div>
+    <textarea class="cs-textarea" style="min-height:100px" placeholder="...">Guide background: Wilderness explorer who learned nature magic
+Abyssal bloodline manifests as infernal magic (Poison spray / Hold person)
+Druid oath: Protect wild places and creatures
+
+Turn priority:
+1. Guiding Bolt (most turns for Advantage)
+2. Switch Starry constellation if needed
+3. Shillelagh or support spell
+4. Bonus action: dash/disengage or Healing Word if emergency</textarea>
+  </div>
+
+</div><!-- /view-sheet -->
+
+</div><!-- /page -->
+
+<script>
+// ── RESOURCES ──
+let wsTotal=2, wsSpent=0;
+let slotMax=[4,3,3,3,2,1], slotSpent=[0,0,0,0,0,0];
+let omenValue=null;
+
+function buildWildShape(){
+  const g=document.getElementById('wsGrid'); g.innerHTML='';
+  for(let i=0;i<wsTotal;i++){
+    const d=document.createElement('div');
+    d.className='rdie'+(i<wsSpent?' spent':'');
+    d.textContent='🐻'; d.title=i<wsSpent?'Restore':'Use';
+    d.onclick=()=>{wsSpent=i<wsSpent?i:i+1;buildWildShape();updateUI();};
+    g.appendChild(d);
+  }
+}
+
+function buildSlots(){
+  const g=document.getElementById('slotGrid'); g.innerHTML='';
+  for(let lv=1;lv<=6;lv++){
+    const max=slotMax[lv-1], spent=slotSpent[lv-1];
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;gap:3px;margin-bottom:4px';
+    for(let i=0;i<max;i++){
+      const s=document.createElement('div');
+      s.className='ldie'+(i<spent?' spent':'');
+      s.textContent='L'+lv;
+      s.title=i<spent?'Restore':'Spend (Slot '+lv+')';
+      s.onclick=()=>{slotSpent[lv-1]=i<spent?i:i+1;buildSlots();updateUI();};
+      d.appendChild(s);
+    }
+    g.appendChild(d);
+  }
+}
+
+function rollOmen(){
+  const roll=Math.floor(Math.random()*6)+1;
+  omenValue=roll;
+  const el=document.getElementById('omenDisplay');
+  el.textContent='◆ '+roll;
+  el.style.color='var(--dusk)';
+}
+
+function updateUI(){
+  document.getElementById('wsCnt').textContent=wsTotal-wsSpent;
+  document.getElementById('sl1').textContent=slotMax[0]-slotSpent[0];
+  document.getElementById('sl2').textContent=slotMax[1]-slotSpent[1];
+  document.getElementById('sl3').textContent=slotMax[2]-slotSpent[2];
+  document.getElementById('sl4').textContent=slotMax[3]-slotSpent[3];
+  document.getElementById('sl5').textContent=slotMax[4]-slotSpent[4];
+  document.getElementById('sl6').textContent=slotMax[5]-slotSpent[5];
+}
+
+// ── HP ──
+let hp=99, hpMax=99;
+function updateHP(){
+  const el=document.getElementById('hpCur'), fill=document.getElementById('hpFill');
+  const pct=(hp/hpMax)*100;
+  el.textContent=hp;
+  el.className='hp-cur'+(hp<=hpMax*.25?' danger':hp<=hpMax*.5?' warn':'');
+  fill.style.width=pct+'%';
+  fill.className='hp-fill'+(hp<=hpMax*.25?' danger':hp<=hpMax*.5?' warn':'');
+}
+function adjHP(d){hp=Math.max(0,Math.min(hpMax,hp+d));updateHP();}
+function fullHeal(){hp=hpMax;updateHP();}
+function editHP(){const v=prompt('Set current HP (0–'+hpMax+'):',hp);if(v!==null&&!isNaN(parseInt(v))){hp=Math.max(0,Math.min(hpMax,parseInt(v)));updateHP();}}
+
+// ── RESTS ──
+function shortRest(){
+  wsSpent=0; buildWildShape();
+  slotSpent=[0,0,0,0,0,0]; buildSlots();
+  updateUI();
+}
+function longRest(){
+  hp=hpMax; updateHP();
+  wsSpent=0; buildWildShape();
+  slotSpent=[0,0,0,0,0,0]; buildSlots();
+  omenValue=null; document.getElementById('omenDisplay').textContent='';
+  updateUI();
+}
+
+// ── TABS ──
+function switchTab(tab){
+  ['a','b','r','f'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.remove('on');
+    document.getElementById('sb-'+t).classList.remove('on');
+  });
+  document.getElementById('tab-'+tab).classList.add('on');
+  document.getElementById('sb-'+tab).classList.add('on');
+}
+
+// ── ACCORDION ──
+function togAct(id){
+  const el=document.getElementById('act-'+id);
+  const was=el.classList.contains('open');
+  el.closest('.slot-body').querySelectorAll('.act-item').forEach(x=>x.classList.remove('open'));
+  if(!was) el.classList.add('open');
+}
+
+// ── CONDITIONS ──
+const CONDS=['Poisoned','Prone','Invisible','Blinded','Frightened','Stunned','Restrained','Hidden','Charmed','Grappled','Exhausted','Deafened'];
+function addCond(){
+  const v=prompt('Add condition:\n'+CONDS.join(', '));
+  if(!v) return;
+  const list=document.getElementById('condList');
+  const t=document.createElement('span');
+  t.className='ctag active'; t.textContent=v+' ×';
+  t.onclick=()=>t.remove();
+  list.insertBefore(t,list.lastElementChild);
+}
+
+// ── PAGE TABS ──
+function switchPage(name){
+  ['play','sheet'].forEach(p=>{
+    document.getElementById('view-'+p).classList.remove('on');
+    document.getElementById('ptab-'+p).classList.remove('on');
+  });
+  document.getElementById('view-'+name).classList.add('on');
+  document.getElementById('ptab-'+name).classList.add('on');
+}
+
+// ── INIT ──
+buildWildShape(); buildSlots(); updateHP(); updateUI();
+</script>
+</body>
+</html>
